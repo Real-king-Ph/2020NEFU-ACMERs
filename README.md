@@ -5,7 +5,7 @@ It's a repository that help not only us but also some readers like us want to ge
 ----------------------------------------------------
 >大家有博客请往这里贴。
 
-[RealKing](https://i.csdn.net/#/uc/profile?spm=1000.2115.3001.5111) ~(线性代数考完就将会和Github同步更新了。)~
+[RealKing](https://i.csdn.net/#/uc/profile?spm=1000.2115.3001.5111) ^(线性代数考完就将会和Github同步更新了。)^
 
 ----------------------------------------------------
 

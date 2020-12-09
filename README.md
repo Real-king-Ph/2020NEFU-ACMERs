@@ -1,2 +1,2 @@
-# 2020NEFU-ACMERs
-It's a repository that help not only us but also some readers like us want to get better at ICPC.
+# 一些模板
+用来存储一些大家觉的好用的模板。

@@ -4,6 +4,7 @@ It's a repository that help not only us but also some readers like us want to ge
 
 ----------------------------------------------------
 >大家有博客请往这里贴。
+
 [RealKing](https://i.csdn.net/#/uc/profile?spm=1000.2115.3001.5111) ~(线性代数考完就将会和Github同步更新了。)~
 
 ----------------------------------------------------
@@ -15,5 +16,7 @@ It's a repository that help not only us but also some readers like us want to ge
 3. 将知识整合归纳整理
 4. 将大家的题解思路集合起来，集思广益。
 
+
 /希望这个仓库可以成为大家进步的见证。
+
 /这个仓库的内容完全可以整合成文件下载以供查阅

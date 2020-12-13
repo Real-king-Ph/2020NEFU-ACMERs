@@ -9,6 +9,7 @@ issue同样也可以写自己将要的代办项目（最好不要过于私人，
 4. 大家也可以把库存在自己的库里，有什么好点子可以通过pull request来合并。
 > 想到再补充吧。  
 > 目前先把git 操作搞明白，github 运行机制搞明白。    
+>> [github使用教程](https://www.bilibili.com/video/BV1Xx411m7kn?p=4)  [git使用教程](https://www.bilibili.com/video/BV1xk4y1R7rC?spm_id_from=333.788.b_636f6d6d656e74.37)
 > 最重要的是，让自己学进去，这样才可以让输出倒逼输入嘛（奇怪的费曼学习法）  
 
 

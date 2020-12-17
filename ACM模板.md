@@ -1,5 +1,3 @@
-
-
 # ACM模板
 
 by 鱼竿钓鱼干
@@ -203,6 +201,11 @@ void divide(int n)
 	if(n>1)printf("%d %d\n",n,1);//处理唯一一个>sqrt(n)的 
 	puts(" ");
 }
+/*
+给定两个数n，m,其中m是一个素数。
+将n（0<=n<=2^31）的阶乘分解质因数，求其中有多少个m。
+while(n/m) ans+=n/m,n/=m;
+*/
 ```
 
 ###### 试除法求约数
@@ -609,49 +612,6 @@ int main()
 }
 ```
 
-#### 进制转换
-
-##### 10进制转K进制
-
-```c++
-string itoA(LL n,int radix)    //n是待转数字，radix是指定的进制
-{
-	string ans;
-	do{
-		int t=n%radix;
-		if(t>=0&&t<=9)	ans+=t+'0';
-		else ans+=t-10+'A';//注意大小写
-		n/=radix;
-	}while(n!=0);	//使用do{}while（）以防止输入为0的情况
-	reverse(ans.begin(),ans.end());//逆序翻转
-	return ans;	
-}
-```
-
-##### K进制转10进制
-
-```c++
-LL Atoi(string s,int radix)    //s是给定的radix进制字符串
-{
-	LL ans=0;
-	for(int i=0;i<s.size();i++)
-	{
-		char t=s[i];
-		if(t>='0'&&t<='9') ans=ans*radix+t-'0';
-		else ans=ans*radix+t-'A'+10;
-	}
-		return ans;
-}
-```
-
-##### Tip
-
-1. 有时候不用真的转换，可以直接按格式打印
-
-#### 博弈论
-
-
-
 #### 数学公式杂烩
 
 ##### 公式猜测(rp+++++)
@@ -755,7 +715,198 @@ $$
 
 30天：4，6，9，11
 
+### 进制与位运算
+
+#### 进制转换
+
+##### 10进制转K进制
+
+```c++
+string itoA(LL n,int radix)    //n是待转数字，radix是指定的进制
+{
+	string ans;
+	do{
+		int t=n%radix;
+		if(t>=0&&t<=9)	ans+=t+'0';
+		else ans+=t-10+'A';//注意大小写
+		n/=radix;
+	}while(n!=0);	//使用do{}while（）以防止输入为0的情况
+	reverse(ans.begin(),ans.end());//逆序翻转
+	return ans;	
+}
+```
+
+##### K进制转10进制
+
+```c++
+LL Atoi(string s,int radix)    //s是给定的radix进制字符串
+{
+	LL ans=0;
+	for(int i=0;i<s.size();i++)
+	{
+		char t=s[i];
+		if(t>='0'&&t<='9') ans=ans*radix+t-'0';
+		else ans=ans*radix+t-'A'+10;
+	}
+		return ans;
+}
+```
+
+##### Tip
+
+1. 有时候不用真的转换，可以直接按格式打印
+
+#### 二进制枚举
+
+##### 枚举子集  O(2^|S|),|S|表示集合中元素个数
+
+```c++
+// S 是一个二进制数，表示一个集合，i 枚举 S 的所有子集
+for (int i = S; i; i = S & i - 1)
+    // blablabla
+```
+
+##### 枚举子集的子集O(3^n)
+
+```c++
+for (int S = 0; S < 1 << n; S ++ ) // 枚举集合 {0, ..., n - 1} 的所有子集
+    for (int i = S; i; i = S & i - 1) // 枚举子集 S 的子集
+        // blablabla
+```
+
+#### 位运算
+
+```
+a&b按位与
+a|b按位或
+a^b按位异或
+~a按位取反，用于表示负数-x=~x+1
+a<<b=a*2^b
+a>>b=a/2^b（去小数）
+!a非
+
+将 x 第 i 位取反：x ^= 1 << i
+将 x 第 i 位制成 1：x |= 1 << i
+将 x 第 i 位制成 0：x &= -1 ^ 1 << i 或 x &= ~(1 << i)
+取 x 对 2 取模的结果：x & 1
+取 x 的第 i 位是否为 1：x & 1 << i 或 x >> i & 1
+取 x 的最后一位：x & -x
+取 x 的绝对值：(x ^ x >> 31) - (x >> 31) （int 型）
+判断 x 是否不为 2 的整次方幂：x & x - 1
+判断 a 是否不等于 b：a != b,a - b,a ^ b
+判断 x 是否不等于−1：x != -1,x ^ -1,x + 1,~x
+```
+
+#### 求二进制中1的个数
+
+##### 暴力O(logN)
+
+```c++
+int count(int x)
+{
+    int res = 0;
+    while (x) res += x & 1, x >>= 1;
+    return res;
+}
+```
+
+##### 位运算O(1)
+
+```c++
+int count(int x)
+{
+    x = (x >> 1 & 0x55555555) + (x & 0x55555555);
+    x = (x >> 2 & 0x33333333) + (x & 0x33333333);
+    x = (x >> 4 & 0x0f0f0f0f) + (x & 0x0f0f0f0f);
+    return x % 255;
+}
+```
+
+#### log2(x)取整
+
+##### 求log_2(x)（暴力）O（logx）
+
+```c++
+int log_2(int x)
+{
+    int res = 0;
+    while (x >> 1) res ++ , x >>= 1;
+    return res;
+}
+```
+
+##### 求log_2(x)（位运算二分展开）O(loglogx)
+
+```c++
+int log_2(int x)
+{
+    int res = 0;
+    if (x & 0xffff0000) res += 16, x >>= 16;
+    if (x & 0xff00) res += 8, x >>= 8;
+    if (x & 0xf0) res += 4, x >>= 4;
+    if (x & 0xc) res += 2, x >>= 2;
+    if (x & 2) res ++ ;
+    return res;
+}
+```
+
+##### 求log_2(x)（二分） O(loglogx)
+
+```
+int log_2(int x)
+{
+    int l = 0, r = 31, mid;
+    while (l < r)
+    {
+        mid = l + r + 1 >> 1;
+        if (x >> mid) l = mid;
+        else    r = mid - 1;
+    }
+}
+```
+
+##### 预处理log_2(x)	1~n中所有数 O（n)
+
+```c++
+int log_2[N];   // 存 log2(i) 的取整结果
+void init(int n)
+{
+    for (int i = 0; 1 << i <= n; i ++ )
+        log_2[1 << i] = i;
+    for (int i = 1; i <= n; i ++ )
+        if (!log_2[i])
+            log_2[i] = log_2[i - 1];
+}
+```
+
+#### 龟速加(a*b%p)
+
+```c++
+//把b转为2进制，b=11=（1011）2=2^3+2^1+2^0
+//a*b%p=8a%p+2a%p+a%p
+//开long long
+int add(int a, int b)
+{
+    while (b)
+    {
+        int x = a ^ b;
+        b = (a & b) << 1;
+        a = x;
+    }
+    return a;
+}
+```
+
+#### STL:bitset
+
+```
+
+```
+
+
+
 ### 高精
+
 #### A+B
 ```c++
 #include<bits/stdc++.h>

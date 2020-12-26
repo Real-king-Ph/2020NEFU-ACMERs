@@ -4,9 +4,15 @@ by 鱼竿钓鱼干
 
 E-mail:851892190@qq.com
 
-参考：acwing板子，洛谷题解，各类博客
+参考：acwing板子（以这个为主+个人做题经验补充），洛谷题解，各类博客，各平台比赛，算法竞赛进阶指南
 
-版本2020/12
+版本：2021/1/1 HAPPY NEW YEAR！
+
+更新内容：
+
+1. 删除:数学公式大杂烩部分，单独建立数学技巧模块
+2. 优化:结构体排序cmp函数,lcm防溢出
+3. 新增:前缀和差分注意事项，二进制和位运算
 
 ------
 
@@ -29,10 +35,12 @@ E-mail:851892190@qq.com
 * [ ] 数组
     * [ ] 数组过大/过小（特别是用板子的时候）
     * [ ] 访问开辟内存（特别是数组里面有运算的时候）
+    * [ ] 二维数组的时候变化要对应啊比如写成mp(i,j-1)=!mp(i,j+1)这种，复制粘贴可能导致这个
 * [ ] 输入
-    * [ ] scanf没&
+    * [ ] scanf没&,100w以上没开scanf
     * [ ] 换行符问题
     * [ ] 忘记多组输入
+    * [ ] 数字输入后输入字符串（字符串）没用getchar
     * [ ] 忘记输入结束符
     * [ ] 尽量不要以换行符结束输入（可能运行超时）
 * [ ] 输出
@@ -71,6 +79,7 @@ E-mail:851892190@qq.com
         * [ ] 开头空格
         * [ ] 结尾空格
         * [ ] 中间空格
+        * [ ] 上一行行末空格
         * [ ] 输入输出的前导0
         * [ ] 是否区分大小写
     * [ ] 几何
@@ -93,7 +102,7 @@ E-mail:851892190@qq.com
 #### 复杂度反推
 
 1. n<=30,指数级别
-   dfs+剪枝，状压DP
+   dfs+剪枝，状压DP，指数型枚举（二进制）
 
 2. n<=100 O(n^3)
    floyd,dp,高斯消元
@@ -132,7 +141,7 @@ E-mail:851892190@qq.com
 
 ### 数学
 #### 质数
-##### 试除法
+##### [试除法](https://www.acwing.com/problem/content/868/)
 ```c++
 bool is_prime(long long x)
 {
@@ -160,7 +169,7 @@ void get_primes(int n)
     }
 }
 ```
-##### 线性筛
+##### [线性筛](https://www.acwing.com/problem/content/870/)
 ```c++
 int primes[N], cnt;     // primes[]存储所有素数
 bool st[N];         // st[x]存储x是否被筛掉
@@ -182,7 +191,7 @@ void get_primes(int n)
 
 #### 质因数
 
-##### 分解质因数
+##### [分解质因数](https://www.acwing.com/problem/content/869/)
 
 ```c++
 void divide(int n)
@@ -208,7 +217,7 @@ while(n/m) ans+=n/m,n/=m;
 */
 ```
 
-###### 试除法求约数
+###### [试除法求约数](https://www.acwing.com/problem/content/871/)
 
 ```c++
 #include<bits/stdc++.h>
@@ -217,7 +226,7 @@ using namespace std;
 vector<int>get_divisors(int n)
 {
 	vector<int>res;
-	for(int i=1;i<=n/i;i++)
+	for(int i=1;i<=n/i;i++)//从1开始，约数啊
 		if(n%i==0)
 		{
 			res.push_back(i);
@@ -242,7 +251,7 @@ int main()
 }
 ```
 
-###### 约数个数(多个数相乘的)
+###### [约数个数(多个数相乘的)](https://www.acwing.com/problem/content/872/)
 
 ```c++
 #include<bits/stdc++.h>
@@ -293,7 +302,7 @@ int main()
 }
 ```
 
-###### 约数和
+###### [约数和](https://www.acwing.com/problem/content/873/)
 
 ```c++
 #include<bits/stdc++.h>
@@ -469,62 +478,6 @@ int main()
 }
 ```
 
-
-#### 快速幂
-##### 裸的
-```c++
-typedef long long ll;
-ll fastpower(ll base,ll power)
-{
-    ll result=1;
-    while(power>0)//不会包含power=0的情况所以这种要特判
-    {
-        if(power&1)//等价于if(power%2==1)
-        {
-            result=result*base;
-        }
-        power>>=1;//等价于power=power/2
-        base=base*base;
-    }
-    return result;
-}
-```
-##### 快速幂+取模
-
-```c++
-#include<bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-int k;
-ll fastpower(ll base,ll power)
-{
-    ll result=1;
-    result%=k;//处理1 0 1
-    while(power>0)//不会包含power=0的情况所以这种要特判
-    {
-        if(power&1)//等价于if(power%2==1)
-        {
-            result=result*base%k;
-        }
-
-        power>>=1;//等价于power=power/2
-        base=(base*base)%k;
-    }
-    return result;
-}
-
-
-int main()
-{
-    int b,p;
-    cin>>b>>p>>k;
-    cout<<b<<"^"<<p<<" mod "<<k<<"="<<fastpower(b,p);
-    return 0;
-}
-```
-
-
-
 #### 阶乘
 
 ###### 阶乘位数
@@ -544,8 +497,6 @@ int main()
 	return 0;
 }
 ```
-
-
 
 #### 回文
 
@@ -651,44 +602,9 @@ $$
 $$
 S=\frac12|\sum_{i=1}^{n}(x_iy_{i+1}-x_{i+1}y_i)|\\x_n=x_1,y_n=y_1
 $$
-##### 数论
 
-###### gcd/lcm
 
-$$
-a*b=gcd(a,b)*lcm(a,b),lcm相关的就用这个转为gcd相关\\
-gcd(a,b)=gcd(a,a mod b)\\
-gcd(a1,a2,……an)=gcd(a1,gcd(a2,a3……an))\\
-gcd(a,b)=gcd(a+cb,b)\\
-lcm(a,b)>=min(a,b)可以拿来优化
-$$
 
-###### 互质
-
-$$
-gcd(a,b)=1\\
-1与任意非0互质\\
-2与任意奇数互质\\
-相邻的两个非0自然数互质\\
-相邻两个奇数互质\\
-任意两个质数是互质数\\
-一个质数一个合数，合数不是质数的倍数，一定互质\\
-构造两两不互质\\
-2\times1,2\times2,2\times3,2\times4……\\
-2\times3,3\times5,5\times7,7\times9……\\
-欧拉函数：\varphi(x)=N(1-\frac1p_1)(1-\frac1p_2)(1-\frac1p_3)……(1-\frac1p_k)\\
-$$
-
-###### 质数/质因数/唯一分解定理
-
-$$
-1到n中大约（可以用来估算时间复杂度和开空间）有\frac{n}{ln(n)}个质数\\
-质数的倍数一定是合数\\
-唯一分解定理：N=p_1^{c_1}p_2^{c_2}p_3^{c_3}p_4^{c_4}p_5^{c_5}……\\
-约数个数(c_1+1)(c_2+1)(c_3+1)(c_4+1)……\\
-约数之和(p_1^0+p_1^1+……+p_1^{c_1})*……*(p_k^0+p_k^1+p_k^2+……+p_k^{c_k})\\
-若p为质数：p=1*p唯一表示，可以把1和p对应p相关的式子
-$$
 
 
 $$
@@ -748,7 +664,7 @@ LL Atoi(string s,int radix)    //s是给定的radix进制字符串
 		if(t>='0'&&t<='9') ans=ans*radix+t-'0';
 		else ans=ans*radix+t-'A'+10;
 	}
-		return ans;
+	return ans;
 }
 ```
 
@@ -761,9 +677,27 @@ LL Atoi(string s,int radix)    //s是给定的radix进制字符串
 ##### 枚举子集  O(2^|S|),|S|表示集合中元素个数
 
 ```c++
-// S 是一个二进制数，表示一个集合，i 枚举 S 的所有子集
+// S 是一个二进制数（二进制每位数字对应一种状态），表示一个集合，i 枚举 S 的所有子集
+//s=9=1001,有子集9=1001,8=1000,1=0001
 for (int i = S; i; i = S & i - 1)
-    // blablabla
+//[0,2^n-1]，n个元素的子集有2^n个
+for(int i = 0;i<(1<<n);i++)
+```
+
+##### 枚举方案
+
+```c++
+void binary_enum(int n)
+{
+	for(int i=0;i<(1<<n);i++)
+		for(int j=0;j<n;j++)
+		{
+			if(i&(1<<j))
+			{
+				array[j]//别写成array[i]
+			}
+		}
+}
 ```
 
 ##### 枚举子集的子集O(3^n)
@@ -774,12 +708,14 @@ for (int S = 0; S < 1 << n; S ++ ) // 枚举集合 {0, ..., n - 1} 的所有子�
         // blablabla
 ```
 
+
+
 #### 位运算
 
 ```
 a&b按位与
 a|b按位或
-a^b按位异或
+a^b按位异或//可以用来排除出现偶数次的数
 ~a按位取反，用于表示负数-x=~x+1
 a<<b=a*2^b
 a>>b=a/2^b（去小数）
@@ -897,10 +833,21 @@ int add(int a, int b)
 }
 ```
 
-#### STL:bitset
+#### 快速幂
 
-```
-
+```c++
+int quick(int a,int b)
+{
+    int res=1;
+    a=a%mod;
+    while(b)
+    { 
+        if(b&1) res=(res*a)%mod;
+        a=(a*a)%mod;
+        b>>=1;
+    }
+    return res;
+}
 ```
 
 
@@ -1181,20 +1128,20 @@ const int N=1e6+10;
 int n;
 int q[N],tmp[N];
 
-
+//i不会等于1只有l
 ll merge_sort(int l,int r)
 {
     if(l>=r)return 0;
     int mid=l+r>>1;
     ll res=merge_sort(l,mid)+merge_sort(mid+1,r);
-    int k=0,i=l,j=mid+1;
+    int k=0,i=l,j=mid+1;//i是l别打成1
     while(i<=mid&&j<=r)
     {
         if(q[i]<=q[j])tmp[k++]=q[i++];
         else
         {
             tmp[k++]=q[j++];
-            res+=mid-i+1;
+            res+=mid-i+1;//q[i]>q[j]，左区间剩下的所有数与右区间当前数成为逆序对
         }
     }
     while(i<=mid)tmp[k++]=q[i++];     //扫尾
@@ -1232,17 +1179,13 @@ struct student
 
 bool cmp(student a,student b)
 {
-    if(a.y<b.y)
-    return true;//想按什么情况来排序，就是这种情况下返回的值是true，但是这里面似乎不能用>=或者<=这样的符号
-    else if(a.y==b.y&&a.m<b.m)
-    return true;
-    else if(a.y==b.y&&a.m==b.m&&a.d<b.d)
-    return true;
-    else if(a.y==b.y&&a.m==b.m&&a.d==b.d&&a.xh>b.xh)
-    return true;
-    else
-    return false;
+    if(a.y!=b.y)return a.y<b.y;
+    if(a.m!=b.m)return a.m<b.m;
+    if(a.d!=b.d)return a.d<b.d;
+    if(a.xh!=b.xh)return a.xh<b.xh;
+    return 0;
 }
+
 int main()
 {
     int n;
@@ -1268,6 +1211,7 @@ int main()
 
 * * *
 ### 输入输出
+
 #### 快读
 ```c++
 
@@ -1281,15 +1225,26 @@ inline int read()
 
 ```
 #### c++关闭同步
+
 ```c++
 int main()
 {
 ios::sync_with_stdio(false);
 }
 ```
-* * *
+#### 亿点点小细节
+
+```
+for(ll i=1;i*i<=n;i++)//乘法比除法快，但不防溢出，自己权衡一下
+for(ll i=1;i<=n/i;i++)//防溢出，但速度慢
+```
+
+
+
 ### 数据结构
+
 #### STL
+
 ```c++
 vector, 变长数组，倍增的思想
     size()  返回元素个数
@@ -1612,8 +1567,6 @@ void merge_set(int x,int y)
 ##### 维护距离(向量本质，有向图)
 
 ```c++
-
-
 #include<bits/stdc++.h>
 using namespace std;
 
@@ -2595,6 +2548,64 @@ int main()
     }
 }
 ```
+
+#### Tip:前缀和一些注意点(激光炸弹为例)
+
+1. 卡内存，直接累加读入，开const in N的时候别太浪
+
+   ```c++
+   cin>>s[i][j];
+   s[i][j]+=s[i-1][j]+s[i][j-1]-s[i-1][j-1];
+   ```
+
+2. 卡边界，为了方便处理前缀和，最好把前面的s[0]留出来，所以预处理
+
+   ```c++
+   s[++x][++y]+=w;
+   //s[x++][y++]+=w;错误
+   ```
+
+3. 覆盖范围处理(r不出界)
+
+   ```c++
+   r=min(5001,r);
+   //5001为最大可能边界
+   ```
+
+   
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=5e3+10;
+typedef long long ll;
+int s[N][N];
+int n,r,x,y,w;
+int main()
+{
+    cin>>n>>r;
+    r=min(5001,r);//预处理半径
+    while(n--)
+    {
+        cin>>x>>y>>w;
+        s[++x][++y]+=w;
+    }
+    for(int i=1;i<=5001;i++)
+        for(int j=1;j<=5001;j++)
+            s[i][j]+=s[i-1][j]+s[i][j-1]-s[i-1][j-1];//直接累加节省内存
+    
+    int res=0;
+    //枚举右下角
+    for(int i=r;i<=5001;i++)//直接开地图最大
+        for(int j=r;j<=5001;j++)
+            res=max(res,s[i][j]-s[i][j-r]-s[i-r][j]+s[i-r][j-r]);
+        
+    cout<<res;
+    return 0;
+}
+```
+
+
 
 #### 一维差分
 

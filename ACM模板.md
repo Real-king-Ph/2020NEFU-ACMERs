@@ -10,9 +10,7 @@ E-mail:851892190@qq.com
 
 更新内容：
 
-1. 删除:数学公式大杂烩部分，单独建立数学技巧模块
-2. 优化:结构体排序cmp函数,lcm防溢出
-3. 新增:前缀和差分注意事项，二进制和位运算
+1. 更新最短路和最小生成树算法
 
 ------
 
@@ -36,6 +34,7 @@ E-mail:851892190@qq.com
     * [ ] 数组过大/过小（特别是用板子的时候）
     * [ ] 访问开辟内存（特别是数组里面有运算的时候）
     * [ ] 二维数组的时候变化要对应啊比如写成mp(i,j-1)=!mp(i,j+1)这种，复制粘贴可能导致这个
+    * [ ] long long 数组用memset初始化0x3f
 * [ ] 输入
     * [ ] scanf没&,100w以上没开scanf
     * [ ] 换行符问题
@@ -114,7 +113,7 @@ E-mail:851892190@qq.com
    块状链表，分块，莫队
 
 5. n<=1e5 O(nlogn)
-   sort，线段树，树状数组，set/map，heap，拓扑排序，dijkstra+heap、prim+heap、spfa、求凸包、求半平面交、二分、CDQ分治、整体二分
+   sort，线段树，树状数组，set/map，heap，拓扑排序，dijkstra+heap、prim+heap、spfa、求凸包、求半平面交、二分、CDQ分治、整体二分，map(超过4*1e5就别用了)
 
 6. n<=1e6 O(n) 常数小的O(nlogn)
    **输入输出100w的时候必须scanf**
@@ -172,14 +171,16 @@ void get_primes(int n)
 ##### [线性筛](https://www.acwing.com/problem/content/870/)
 ```c++
 int primes[N], cnt;     // primes[]存储所有素数
-bool st[N];         // st[x]存储x是否被筛掉
+bool st[N];         // st[x]存储x是否被筛掉，后面可以直接用来判是否为素数
 //n只会被最小质因子筛掉
 void get_primes(int n)
 {
+    memset(st,0,sizeof st);
+    st[0]=st[1]=1;
     for (int i = 2; i <= n; i ++ )//不要忘记等号
     {
-        if (!st[i]) primes[cnt ++ ] = i;
-        for (int j = 0; primes[j] <= n / i; j ++ )//不要忘记等号
+        if (!st[i]) primes[++cnt] = i;
+        for (int j = 1; primes[j] <= n / i; j ++ )//不要忘记等号
         {
             st[primes[j] * i] = true;//合数一定有最小质因数，用最小质因数的倍数筛去合数
             if (i % primes[j] == 0) break;//prime[j]一定是i最小质因子，也一定是prime[j]*i的最小质因子
@@ -563,55 +564,7 @@ int main()
 }
 ```
 
-#### 数学公式杂烩
 
-##### 公式猜测(rp+++++)
-
-###### 待定系数法
-$$
-f[n]=af[n-1]+bf[n-1]+cf[n-2]……+k\\
-f[n]=an^3+bn^2+cn+d
-$$
-技巧
-
-1. 对于分类讨论，建议取靠后的数据带入，前面数据单独输出（至于从第几项开始，你感觉可以递推或者递归了那就从哪里开始代）
-2. 一般是两项，有时候可能三项，有时候可能还有常数项
-3. 分类讨论，分奇偶找找规律
-
-##### 几何
-
-###### 平面分割
-
-直线分割
-$$
-f[n]=n(n+1)/2+1
-$$
-折线分割
-$$
-f[n]=2n^2-n+1
-$$
-封闭曲线分割
-$$
-f[n]=n^2-n+2
-$$
-平面分割空间
-$$
-f[n]=(n^3+5n)/6+1
-$$
-###### 任意多边形面积
-$$
-S=\frac12|\sum_{i=1}^{n}(x_iy_{i+1}-x_{i+1}y_i)|\\x_n=x_1,y_n=y_1
-$$
-
-
-
-
-
-$$
-三柱：H_3=2^n-1\\
-禁止隔柱移动三柱：H=3^n-1\\
-只能顺时针转：H(n)=\frac16(-(\sqrt3-3)(1-\sqrt3)^n+(\sqrt3+3)(\sqrt3+1)^n-6)\\
-$$
 
 
 
@@ -712,7 +665,7 @@ for (int S = 0; S < 1 << n; S ++ ) // 枚举集合 {0, ..., n - 1} 的所有子�
 
 #### 位运算
 
-```
+```c++
 a&b按位与
 a|b按位或
 a^b按位异或//可以用来排除出现偶数次的数
@@ -731,6 +684,10 @@ a>>b=a/2^b（去小数）
 判断 x 是否不为 2 的整次方幂：x & x - 1
 判断 a 是否不等于 b：a != b,a - b,a ^ b
 判断 x 是否不等于−1：x != -1,x ^ -1,x + 1,~x
+
+异或，加法恒等式
+a+b=a|b+2(a&b)	若a+b=a|b-->a&b=0
+若a-b=a|b-->a-b每一位不能发生借位,即若a已知,对于a的每一位,若为1，则可以01若为0，则指南0
 ```
 
 #### 求二进制中1的个数
@@ -814,6 +771,20 @@ void init(int n)
             log_2[i] = log_2[i - 1];
 }
 ```
+
+#### 满足方程$ x^k≤y $的最大的k
+
+```c++
+ll calc(ll x,ll y)//x,y,k整数
+{
+    if(x<=1||y==0)return -1;//k不存在或无限大
+    ll ans=0;
+    while(y>=x)ans++,y/=x;//不用想log什么的
+    return ans;
+}
+```
+
+
 
 #### 龟速加(a*b%p)
 
@@ -1160,7 +1131,12 @@ int main()
 }
 ```
 
+###### 逆序对应用
+
+1. 交换重排，根据奇偶性判局面可达（可能是字符串，二维平面，数组序列）
+
 #### STL
+
 ##### sort+结构体+cmp
 ```c++
 #include<bits/stdc++.h>
@@ -1229,7 +1205,8 @@ inline int read()
 ```c++
 int main()
 {
-ios::sync_with_stdio(false);
+	ios::sync_with_stdio(false);
+    cin.tie(0);
 }
 ```
 #### 亿点点小细节
@@ -1363,7 +1340,9 @@ bitset, 圧位
 
 ```
 #### 栈
-##### 后缀表达式
+##### 表达式
+
+###### 后缀表达式
 
 
 
@@ -1400,6 +1379,7 @@ int main()
 
 ```c++
 // hh 表示队头，tt表示队尾,队列从0开始
+//注意关注N的大小，很有可能越界，如果多次入队，推荐用queue
 int q[N], hh = 0, tt = -1;
 //如果第一个要插入队尾的元素已经知道了，那tt开局用0即可
 int hh=0,tt=-1
@@ -1558,9 +1538,20 @@ int find(int x)
 }
 void merge_set(int x,int y)
 {
-    int fx=find(x),fy=find(y);
-    if(fx==fy)return;//不要忘记
-    else f[fx]=fy;
+	int fx=find(x),fy=find(y);
+	if(fx!=fy)
+    {
+        siz[fy]+=siz[fx];//维护大小
+        f[fx]=fy;
+    }
+}
+void init()
+{
+    for(int i=1;i<=n;i++)
+    {
+        f[i]=i;
+        siz[i]=1;
+    }
 }
 ```
 
@@ -1614,8 +1605,6 @@ int main()
                     d[fx]=d[y]+1-d[x];
                 }
             }
-
-
         }
     }
     cout<<cnt;
@@ -1655,7 +1644,7 @@ int main()
         {
             scanf("%d%d",&a,&b);
             if(find(a)==find(b))continue;//判断一下有没有在同一集合里了
-            siz[find(b)]+=siz[find(a)];
+            siz[find(b)]+=siz[find(a)];//要在合并之前
             f[find(a)]=find(b);
         }
         else if(op[1]=='1')
@@ -1810,8 +1799,15 @@ int main()
 #### 堆
 * * *
 ### 查找
+
 #### 二分查找
+
+##### 二分的应用
+
+1. 数据范围大，数据量小，把数据存到普通数组，排序，二分查找下标，可以得到区间数据数量
+
 ##### 整数二分
+
 ```c++
 #include<bits/stdc++.h>
 using namespace std;
@@ -1833,7 +1829,7 @@ bool check_2(int mid)
     if(a[mid]<=x)return 1;
     else return 0;
 }
-int bsearch_1(int l,int r)//第一个满足条件的值
+int bsearch_1(int l,int r)//第一个满足条件的值，即右半段
 {
     while(l<r)
     {
@@ -1846,7 +1842,7 @@ int bsearch_1(int l,int r)//第一个满足条件的值
 }
 
 
-int bsearch_2(int l,int r)//最后一个满足条件的值
+int bsearch_2(int l,int r)//最后一个满足条件的值，即左半段
 {
     while(l<r)
     {
@@ -1890,6 +1886,36 @@ double bsearch_3(double l, double r)//输入l和r的时候保证l<r不要输入�
     return l;
 }
 ```
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const double eps=1e-7;
+double y;
+double f(double x)
+{
+	return 0.0001*x*x*x*x*x+0.003*x*x*x+0.5*x-3;
+}
+int main()
+{
+	while(scanf("%lf",&y)!=EOF)
+	{
+		double mid;
+		double l=-20.0,r=20.0;
+		while(l<=r)
+		{
+			mid=(l+r)/2.0;
+			if(fabs(f(mid)-y)<1e-5)break;//如果直接数值型的可以这样处理保证精度
+			if(f(mid)<y)l=mid;
+			else r=mid;
+		}
+		printf("%.4lf\n",mid);
+	}
+	return 0;
+}
+```
+
+
+
 ##### STL
 
 * * *
@@ -2354,72 +2380,6 @@ int main()
     return 0;
 }
 ```
-
-##### 拓扑序列（有向无环图AOV)
-
-```c++
-
-
-#include<bits/stdc++.h>
-using namespace std;
-const int N=1e6+10;
-int n,m;
-int h[N],e[N],ne[N],idx;
-int q[N],d[N];//q队列存储层次遍历序列，d存储i号节点入度
-
-
-void add(int a,int b)
-{
-    e[idx]=b,ne[idx]=h[a],h[a]=idx++;
-}
-//返回布尔序列是否存在，若存在，则存储在q数组中
-bool topsort()
-{
-    int hh=0,tt=-1;
-    //遍历每个节点，入队为0则入队
-    for(int i=1;i<=n;i++)
-        if(!d[i])
-            q[++tt]=i;
-            
-    while(hh<=tt)
-    {
-        //队列不为空则取出头节点
-        int t=q[hh++];//出队的顺序就是拓扑序
-        //遍历头节点每个出边
-        for(int i=h[t];i!=-1;i=ne[i])
-        {
-            int j=e[i];
-            //出边能到的节点入度减1
-            d[j]--;
-            if(d[j]==0)q[++tt]=j;//如果节点j，入度0则入队
-        }
-    }
-    
-    return tt==n-1;//不要打成=，所有点都入队了说明存在拓扑序列
-}
-int main()
-{
-    cin>>n>>m;
-    memset(h,-1,sizeof(h));
-    for(int i=0;i<m;i++)
-    {
-        int a,b;
-        cin>>a>>b;
-        add(a,b);
-        d[b]++;//b节点入度增加1
-    }
-    if(topsort())
-    {
-        for(int i=0;i<n;i++)printf("%d ",q[i]);
-        puts("");
-    }
-    else puts("-1");
-    return 0;
-}
-```
-
-
-
 ##### 连通块里多少块
 
 ```c++
@@ -2493,10 +2453,752 @@ int main()
 }
 ```
 
+##### 拓扑序列（有向无环图AOV)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=1e6+10;
+int n,m;
+int h[N],e[N],ne[N],idx;
+int q[N],d[N];//q队列存储层次遍历序列，d存储i号节点入度
+
+
+void add(int a,int b)
+{
+    e[idx]=b,ne[idx]=h[a],h[a]=idx++;
+}
+//返回布尔序列是否存在，若存在，则存储在q数组中
+bool topsort()
+{
+    int hh=0,tt=-1;
+    //遍历每个节点，入队为0则入队
+    for(int i=1;i<=n;i++)
+        if(!d[i])
+            q[++tt]=i;
+            
+    while(hh<=tt)
+    {
+        //队列不为空则取出头节点
+        int t=q[hh++];//出队的顺序就是拓扑序
+        //遍历头节点每个出边
+        for(int i=h[t];i!=-1;i=ne[i])
+        {
+            int j=e[i];
+            //出边能到的节点入度减1
+            d[j]--;
+            if(d[j]==0)q[++tt]=j;//如果节点j，入度0则入队
+        }
+    }
+    
+    return tt==n-1;//不要打成=，所有点都入队了说明存在拓扑序列
+}
+int main()
+{
+    cin>>n>>m;
+    memset(h,-1,sizeof(h));
+    for(int i=0;i<m;i++)
+    {
+        int a,b;
+        cin>>a>>b;
+        add(a,b);
+        d[b]++;//b节点入度增加1
+    }
+    if(topsort())
+    {
+        for(int i=0;i<n;i++)printf("%d ",q[i]);
+        puts("");
+    }
+    else puts("-1");
+    return 0;
+}
+```
+
+
+#### 最短路
+
+##### dijkstra朴素稠密图O（n^2)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+
+const int N=510;
+int n,m;
+int g[N][N];//邻接矩阵处理稠密图
+int dist[N];
+bool st[N];
+int dijkstra()
+{
+    memset(dist,0x3f,sizeof(dist));//距离初始化为正无穷
+    memset(st,0,sizeof st);
+    dist[1]=0;//一号点初始化为0
+    
+    for(int i=0;i<n;i++)//迭代n次
+    {
+        int t=-1;//t开始为-1表示还没确定最短路
+        for(int j=1;j<=n;j++)
+            if(!st[j]&&(t==-1||dist[t]>dist[j]))//所有st[j]=0的点中找到距离最小的点
+                t=j;
+        st[t]=1;
+        
+        for(int j=1;j<=n;j++)//用t更新其他点到1的距离，遍历边有效更新m次
+            dist[j]=min(dist[j],dist[t]+g[t][j]);
+    }
+    
+    if(dist[n]==0x3f3f3f3f)return -1;
+    return dist[n];
+}
+int main()
+{
+    scanf("%d%d",&n,&m);
+    
+    memset(g,0x3f,sizeof(g));//初始化点位无穷
+    
+    while(m--)
+    {
+        int a,b,c;
+        scanf("%d%d%d",&a,&b,&c);
+        g[a][b]=min(g[a][b],c);//处理重边保留距离最短的即可
+    }
+    
+    int t=dijkstra();
+    
+    printf("%d\n",t);
+    
+    return 0;
+}
+```
+
+
+
+##### [dijkstra堆优化稀疏图O(mlogn)](https://www.luogu.com.cn/problem/P4779)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+typedef pair<int,int> PII;
+int n,m,s;
+const int N=5e5+10;//邻接表N看边数啊啊啊
+int h[N],e[N],ne[N],w[N],idx;
+int dist[N];
+bool vis[N];
+void add(int a,int b,int c)
+{
+	e[idx]=b,w[idx]=c,ne[idx]=h[a],h[a]=idx++;
+}
+void dijkstra(int st)
+{
+	memset(dist,0x3f,sizeof dist);//你开0X3f就要对于int的数组，不要用long long数组开memset 0x3f
+    memset(vis,0,sizeof vis);
+	dist[st]=0;
+	priority_queue<PII,vector<PII>,greater<PII>>heap;//小根堆，顺序不能换，因为pair按first排序
+	heap.push({0,st});//first距离，second编号
+	while(heap.size())
+	{
+        //维护当前未被st标记且离源点最近的点
+		auto t=heap.top();
+		heap.pop();
+		int ver=t.second,distance=t.first;
+		if(vis[ver])continue;
+		vis[ver]=1;
+		for(int i=h[ver];i!=-1;i=ne[i])//用t更新其他点
+		{
+			int j=e[i];
+			if(dist[j]>distance+w[i])
+			{
+				dist[j]=distance+w[i];//松弛
+				heap.push({dist[j],j});	
+			} 
+		}
+	}
+}
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cin>>n>>m>>s;
+	memset(h,-1,sizeof h);
+	while(m--)
+	{
+		int a,b,c;
+		cin>>a>>b>>c;
+		add(a,b,c);	
+	} 
+	dijkstra(s);
+	for(int i=1;i<=n;i++)
+	{
+		if(dist[i]!=0x3f3f3f3f)cout<<dist[i]<<" ";
+		else cout<<"2147483647 ";
+	}
+	return 0;
+}
+```
+
+##### [dijkstra反向建图](https://www.luogu.com.cn/problem/P1629)求多个点到起点的最短路
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=1e4+10,M=2e5+10;
+int h[N],e[M],w[M],ne[M],idx;
+int n,m;
+int dist[N];
+bool vis[N]; 
+typedef pair<int,int> PII;
+void add(int a,int b,int c)
+{
+	e[idx]=b,w[idx]=c,ne[idx]=h[a],h[a]=idx++;
+}
+void dijkstra(int st)
+{
+	memset(dist,0x3f,sizeof dist);
+	memset(vis,0,sizeof vis);
+	dist[st]=0;
+	priority_queue<PII,vector<PII>,greater<PII>>heap;
+	heap.push({0,st});
+	while(heap.size())
+	{
+		auto t=heap.top();
+		int ver=t.second,distance=t.first;
+		heap.pop();
+		if(vis[ver])continue;
+		vis[ver]=1;
+		for(int i=h[ver];i!=-1;i=ne[i])
+		{
+			int j=e[i];
+			if(dist[j]>distance+w[i])
+			{
+				dist[j]=distance+w[i];
+				heap.push({dist[j],j});
+			}
+		}
+	}
+	
+}
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0); 
+	cin>>n>>m;
+	memset(h,-1,sizeof h);
+	while(m--)
+	{
+		int a,b,c;
+		cin>>a>>b>>c;
+		add(a,b,c); 
+		add(b+n,a+n,c);                                                                          
+	}
+	dijkstra(1);
+	int res=0;
+	for(int i=2;i<=n;i++)res+=dist[i];
+	dijkstra(n+1);
+	for(int i=n+2;i<=2*n;i++)res+=dist[i];
+	cout<<res;
+}
+```
+
+
+
+##### bellman_ford()(处理边数限制)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+
+const int N=510,M=10010;
+
+
+int n,m,k;
+int dist[N],backup[N];
+
+
+struct Edge
+{
+    int a,b,w;
+}edges[M];
+
+
+int bellman_ford()
+{
+    memset(dist,0x3f,sizeof dist);
+    dist[1]=0;//初始化
+    for(int i=0;i<k;i++)
+    {
+        memcpy(backup,dist,sizeof dist);//防止串联更新
+        for(int j=0;j<m;j++)
+        {
+            int a=edges[j].a,b=edges[j].b,w=edges[j].w;
+            dist[b]=min(dist[b],backup[a]+w);//用备份更新
+        }
+    }
+    if(dist[n]>0x3f3f3f3f/2)return -1;//
+    return dist[n];
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m>>k;
+    
+    for(int i=0;i<m;i++)
+    {
+        int a,b,w;
+        cin>>a>>b>>w;
+        edges[i]={a,b,w};
+    }
+    int t=bellman_ford();
+    if(t==-1)puts("impossible");
+    else cout<<t<<endl;
+    return 0;
+}
+```
+
+##### SPFA
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=1e5+10;
+int h[N],e[N],w[N],ne[N],idx;
+bool st[N];
+int dist[N];
+int n,m;
+void add(int a,int b,int c)
+{
+    e[idx]=b,w[idx]=c,ne[idx]=h[a],h[a]=idx++;
+}
+
+
+int spfa()
+{
+    memset(dist,0x3f,sizeof dist);
+    dist[1]=0;
+    queue<int>q;
+    q.push(1);
+    st[1]=1;
+    while(q.size())
+    {
+        int t=q.front();
+        q.pop();
+        st[t]=0;
+        for(int i=h[t];i!=-1;i=ne[i])
+        {
+            int j=e[i];
+            if(dist[j]>dist[t]+w[i])
+            {
+                dist[j]=dist[t]+w[i];
+                if(!st[j])
+                {
+                    q.push(j);
+                    st[j]=1;
+                }
+            }
+        }
+    }
+    if(dist[n]>0x3f3f3f3f/2)return -1;
+    return dist[n];
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m;
+    memset(h,-1,sizeof h);
+    while(m--)
+    {
+        int a,b,c;
+        cin>>a>>b>>c;
+        add(a,b,c);
+    }
+    int t=spfa();
+    if(t==-1)puts("impossible");
+    else cout<<t<<endl;
+    return 0;
+}
+```
+
+##### SPFA（判有无负权环）
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+
+const int N=2010,M=10010;
+int h[N],e[M],ne[M],w[M],idx;
+int dist[N],cnt[N];
+bool st[N];
+int n,m;
+void add(int a,int b,int c)
+{
+    e[idx]=b,w[idx]=c,ne[idx]=h[a],h[a]=idx++;
+}
+bool spfa()
+{
+    queue<int>q;
+    for(int i=1;i<=n;i++)q.push(i),st[i]=1;
+    while(q.size())
+    {
+        int t=q.front();
+        q.pop();
+        st[t]=0;
+        for(int i=h[t];i!=-1;i=ne[i])
+        {
+            int j=e[i];
+            if(dist[j]>dist[t]+w[i])
+            {
+                dist[j]=dist[t]+w[i];
+                cnt[j]=cnt[t]+1;//不要写++cnt[j]，重边会影响的
+                if(cnt[j]>=n)return 1;
+                if(!st[j])
+                {
+                    q.push(j);
+                    st[j]=1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m;
+    memset(h,-1,sizeof h);
+    while(m--)
+    {
+        int a,b,c;
+        cin>>a>>b>>c;
+        add(a,b,c);
+    }
+    if(spfa())cout<<"Yes"<<endl;
+    else cout<<"No"<<endl;
+    return 0;
+}
+```
+
+##### Floyd(多源汇最短路)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+int n,m,q;
+const int N=210,INF=1e9;
+int d[N][N];
+
+void floyd()
+{
+    for(int k=1;k<=n;k++)
+        for(int i=1;i<=n;i++)
+            for(int j=1;j<=n;j++)
+                d[i][j]=min(d[i][j],d[i][k]+d[k][j]);
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m>>q;
+    for(int i=1;i<=n;i++)
+        for(int j=1;j<=n;j++)
+            if(i==j)d[i][j]=0;//处理自环
+            else d[i][j]=INF;
+    
+    while(m--)
+    {
+        int a,b,w;
+        cin>>a>>b>>w;
+        d[a][b]=min(d[a][b],w);
+    }
+    floyd();
+    while(q--)
+    {
+        int a,b;
+        cin>>a>>b;
+        if(d[a][b]>INF/2)cout<<"impossible"<<endl;
+        else cout<<d[a][b]<<endl;
+    }
+    return 0;
+}
+```
+
+##### [Floyd求最短环](https://www.luogu.com.cn/problem/P6175)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=200;
+typedef long long ll;
+const int INF=0x7f7f7f7f;
+ll g[N][N],dist[N][N];
+int n,m;
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+	cin>>n>>m;
+	for(int i=1;i<=n;i++)
+		for(int j=1;j<=n;j++)
+			if(i!=j)dist[i][j]=g[i][j]=INF;
+	while(m--)
+	{
+		ll a,b,c;
+		cin>>a>>b>>c;
+		g[a][b]=g[b][a]=min(g[a][b],c);
+		dist[a][b]=dist[b][a]=min(g[a][b],c);
+	}
+	ll ans=INF;
+	for(int k=1;k<=n;k++)
+	{
+		for(int i=1;i<k;i++)
+			for(int j=i+1;j<k;j++)
+				ans=min(ans,dist[i][j]+g[i][k]+g[k][j]);
+		for(int i=1;i<=n;i++)
+			for(int j=1;j<=n;j++)
+			{
+				dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j]);
+				dist[j][i]=dist[i][j];
+			}
+	}
+	if(ans==INF)cout<<"No solution.";
+	else cout<<ans;
+	return 0;
+}
+```
+
+#### 最小生成树
+
+##### [Kruskal（稀疏图）(O(mlogm))](https://www.acwing.com/problem/content/861/)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=2e6+10;
+int n,m;
+int f[N];
+struct Edge
+{
+    int a,b,w;
+}edges[N];
+bool cmp(Edge a,Edge b)
+{
+   return a.w<b.w;//如果写成if的最后别忘记加return 0
+}
+
+int find(int x)
+{
+    if(f[x]!=x)f[x]=find(f[x]);
+    return f[x];
+}
+
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m;
+    for(int i=0;i<m;i++)
+    {
+        int a,b,c;
+        cin>>a>>b>>c;
+        edges[i]={a,b,c};
+    }
+    sort(edges,edges+m,cmp);//对边排序
+    int res=0,cnt=0;//res最小生成树边权重之和，cnt记录最小生成树中的边数
+    //并查集看有没有在集合里
+    for(int i=0;i<=m;i++)f[i]=i;
+    for(int i=0;i<m;i++)
+    {
+        int a=edges[i].a,b=edges[i].b,w=edges[i].w;
+        a=find(a),b=find(b);
+        if(a!=b)
+        {
+            f[a]=b;
+            res+=w;
+            cnt++;
+        }
+    }
+    if(cnt<n-1)cout<<"impossible"<<endl;
+    else cout<<res<<endl;
+    return 0;
+}
+```
+
+##### [Prim(稠密图)(O(n^2))](https://www.acwing.com/problem/content/860/)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int N=1e3,INF=0x3f3f3f3f;
+int dist[N],g[N][N];//dist是顶点到任意一个树顶点的最短距离
+bool st[N];
+int n,m;
+int prim()
+{
+    memset(dist,0x3f,sizeof dist);
+    int res=0;//存最小生成树所有边长度之和
+    for(int i=0;i<n;i++)
+    {
+        int t=-1;
+        for(int j=1;j<=n;j++)//找集合外所有点中到集合距离最小的点
+            if(!st[j]&&(t==-1||dist[t]>dist[j]))
+                t=j;
+        if(i&&dist[t]==INF)return INF;//不是第一个点而且最短距离都为INF，就不存在最小生成树
+        if(i)res+=dist[t];//只要不是第一个点
+        st[t]=1;
+        //扫描顶点t的所有边，在以t为中心更新其他点到树的距离（这时候t已经在生成树里了，其他点到t距离就是到生成树距离）
+        for(int j=1;j<=n;j++)dist[j]=min(dist[j],g[t][j]);
+    }
+    return res;
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m;
+    memset(g,0x3f,sizeof g);
+    while(m--)
+    {
+        int a,b,c;
+        cin>>a>>b>>c;
+        g[a][b]=g[b][a]=min(g[a][b],c);
+    }
+    int t=prim();
+    if(t==INF)cout<<"impossible";
+    else cout<<t<<endl;
+    return 0;
+}
+```
+
+#### 二分图
+
+##### [染色法判二分图(O(m+n))](https://www.acwing.com/problem/content/862/)
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=1e6+10,M=2e6+10;
+
+int n,m;
+int h[N],e[M],ne[M],idx;
+int color[N];
+
+bool dfs(int u,int c)//u为点编号，c为染色
+{
+    color[u]=c;
+    for(int i=h[u];i!=-1;i=ne[i])//遍历和点连接的点
+    {
+        int j=e[i];
+        if(!color[j])//没染色,那就染（3-c实现1染2，2染1）
+        {
+            if(!dfs(j,3-c))return 0;
+        }
+        else if(color[j]==c)return 0;//已经染色
+    }
+    return 1;
+}
+void add(int a,int b)
+{
+    e[idx]=b,ne[idx]=h[a],h[a]=idx++;
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cin>>n>>m;
+    memset(h,-1,sizeof h);
+    while(m--)
+    {
+        int a,b;
+        cin>>a>>b;
+        add(a,b);
+        add(b,a);
+    }
+    bool flag=1;//染色是否有矛盾发生
+    for( int i=1;i<=n;i++)
+        if(!color[i])
+        {
+            if(!dfs(i,1))//dfs false有矛盾发生
+            {
+                flag=0;
+                break;
+            }
+        }
+    
+    if(flag)puts("Yes");
+    else puts("No");
+}
+```
+
+##### 匈牙利算法二分图最大匹配图
+
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=510,M=100010;
+
+int n1,n2,m;
+int h[N],e[M],ne[M],idx;
+int match[N];
+bool st[N];
+
+void add(int a,int b)
+{
+    e[idx]=b,ne[idx]=h[a],h[a]=idx++;
+}
+bool find(int x)
+{
+    for(int i=h[x];i!=-1;i=ne[i])//x是男的，j是妹子，遍历男的看上的所有妹子
+    {
+        int j=e[i];
+        if(!st[j])
+        {
+            st[j]=1;
+            if(match[j]==0||find(match[j]))//妹子没有匹配或者妹子原本匹配的男的有备胎
+            {
+                match[j]=x;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    cin>>n1>>n2>>m;
+    memset(h,-1,sizeof h);
+    while(m--)
+    {
+        int a,b;
+        cin>>a>>b;
+        add(a,b);
+    }
+    int res=0;
+    for(int i=1;i<=n1;i++)
+    {
+        memset(st,0,sizeof st);
+        if(find(i))res++;
+    }
+    cout<<res<<endl;
+    return 0;
+}
+```
+
 
 
 * * *
 ### 前缀和/差分
+
 #### 一维前缀和
 
 ```
@@ -2610,10 +3312,35 @@ int main()
 #### 一维差分
 
 ```c++
+void init()
+{
+	memset(b,0,sizeof b);
+	for(int i=1;i<=n;i++)b[i]=a[i]-a[i-1];
+}
+void edit(int l,int r,int c)
+{
+    //区间预处理非常规情况
+	if(l>r)swap(l,r);
+	if(l<st)l=st;
+	if(r<st)r=st;
+	if(l>ed)l=ed;
+	if(r>ed)r=ed;
+	b[l]+=c;b[r+1]-=c;
+}
+void build()
+{
+	for(int i=1;i<=n;i++)a[i]=a[i-1]+b[i];
+}
+```
+
+
+
+```c++
 #include<bits/stdc++.h>
 using namespace std;
 
 //给区间[l, r]中的每个数加上c：B[l] += c, B[r + 1] -= c
+//要确保修改的时候r+1>=l,l和r在区间范围内
 const int N=1e6+5;
 int a[N],b[N];
 int main()
@@ -2743,10 +3470,10 @@ int main()
 }
 ```
 * * *
-### 滑动窗口
+### 区间操作
 
+#### 区间合并
 
-* * *
 ### DP
 
 #### DP思考方式
@@ -3010,7 +3737,7 @@ int main()
 
 ##### 分组背包
 
-```
+```c++
 #include<bits/stdc++.h>
 using namespace std;
 

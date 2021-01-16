@@ -458,7 +458,7 @@ int main()
 
 ##### 递归
 
-```
+```cpp
 #include<stdio.h>
 
 int c(int i,int j)

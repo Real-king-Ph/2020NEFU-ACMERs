@@ -224,7 +224,7 @@ void get_primes(int n)
 ```c++
 void divide(int n)
 {
-	for(int i=2;i<n/i;i++)//不要忘记等号
+	for(int i = 2 ; i < = n / i ; i ++ )//不要忘记等号
 		if(n%i==0)//i一定是质数 
 		{
 			int s=0;
@@ -580,6 +580,8 @@ int main()
 #### 回文
 
 ##### 判断
+&emsp;
+_数字_
 ```c++
 bool hw(int x)
 {
@@ -593,9 +595,11 @@ bool hw(int x)
     else return false;
 }
 ```
+&emsp;
+_字符串_  
+Pt.1
 ```c++
-bool hw(string a)
-{
+bool hw(string a){
 	string b;
 	b=a;
 	reverse(b.begin(),b.end());//不要拼错了，这玩意也不可以直接赋值
@@ -603,6 +607,17 @@ bool hw(string a)
 	else return false;
 }
 ```
+Pt.2
+```cpp
+bool check_Pa(string a){
+    for(int i = 0 , j = a.lenth() - 1 ; i < j ; i ++ , j -- ){
+        if(a[i] != a[j]) return false;
+    }
+    return true;
+}
+```
+&emsp;
+
 
 
 
@@ -611,34 +626,23 @@ bool hw(string a)
 ###### 递归
 
 ```c++
-式子f[n]=f[n-1]+f[n-2]
-终止条件f[1]=1    f[2]=1
-long long f(int n)
-{
-    if(n==1||n==2)return 1;
-    return f(n-1)+f(n-2);
+ll f[100] ;      //数字太大开不动 建议与高精度结合起来写
+ll Fib(int n){
+    if(n <= 1)  return 1;
+    if(f[n])    return f[n];
+    else        return f[n] = Fib(n - 1) + Fib(n - 2);
 }
 ```
 
 ###### 递推
 
 ```c++
-#include<bits/stdc++.h>
-using namespace std;
-long long f[50];
-int main()
-{
-    int n;
-    cin>>n;
-    
-    f[0]=0;f[1]=1;
-    cout<<f[1]<<" ";
-    for(int i=2;i<=n;i++)
-    {
-        f[i]=f[i-1]+f[i-2];
-        cout<<f[i]<<" ";
+ll f[100];
+ll init(){
+    f[1] = f[0] = 1;
+    for(int i = 2 ; i < 100 ; i ++ ){
+        f[i] = f[i - 1] + f[i - 2];
     }
-    return 0;
 }
 ```
 

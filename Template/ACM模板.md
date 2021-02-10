@@ -623,7 +623,7 @@ bool check_Pa(string a){
 
 #### 斐波那契数列
 
-###### 递归
+##### 递归
 
 ```c++
 ll f[100] ;      //数字太大开不动 建议与高精度结合起来写
@@ -634,7 +634,7 @@ ll Fib(int n){
 }
 ```
 
-###### 递推
+##### 递推
 
 ```c++
 ll f[100];
@@ -646,6 +646,49 @@ ll init(){
 }
 ```
 
+##### 矩阵快速幂
+```cpp
+ll Fib_Q_M_Power(ll n){
+    if(n <= 1) return n;
+    if(n == 2) return 1;
+    ll ans[2][2] = {1,0,0,1}, tmp[2][2] , a[2][2] = {1,1,1,0};
+    while(n){
+        if(n & 1){
+            memset(tmp,0,sizeof(tmp));
+            for(int i = 0 ; i < 2 ; i ++ ){
+                for(int j = 0 ; j < 2 ; j ++ ){
+                    for(int k = 0 ; k < 2 ; k ++ ){
+                        tmp[i][j] = (tmp[i][j] + ans[i][k] * a[k][j] % MOD) % MOD;
+                    }
+                }
+            }
+
+            for(int i = 0 ; i < 2 ; i ++ ){
+                for(int j = 0 ; j < 2 ; j ++ ) ans[i][j] = tmp[i][j];
+            }
+
+        }
+
+        n >>= 1;
+        memset(tmp,0,sizeof(tmp));
+        for(int i = 0 ; i < 2 ; i ++ ){
+            for(int j = 0 ; j < 2 ; j ++ ){
+                for(int k = 0 ; k < 2 ; k ++ ){
+                    tmp[i][j] = (tmp[i][j] + a[i][k] * a[k][j] % MOD) % MOD;
+                }
+            }
+        }
+
+        for(int i = 0 ; i < 2 ; i ++ ){
+            for(int j = 0 ; j < 2 ; j ++ ){
+                a[i][j] = tmp[i][j];
+            }
+        }
+
+    }
+    return ans[1][0];
+}
+``` 
 
 
 

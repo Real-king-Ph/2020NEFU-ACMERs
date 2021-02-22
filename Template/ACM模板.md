@@ -2055,10 +2055,11 @@ memset(h, -1, sizeof h);
 
 ###### 邻接矩阵
 
-##### 建图小技巧
+用一个二维数组表示所建的图。通常查询修改的复杂度为 O(1) 十分方便快捷，但由于其空间复杂度为 $O(n^2)$ ，二维数组过大的时候会采用邻接表。
 
-1. 反向建图日神仙
-2. 
+一般无向图相关于主对角线对称，主对角线为 0 
+
+有向带权图，使用领接矩阵会好很多。
 
 #### DFS
 
@@ -2109,9 +2110,9 @@ int main()
         return 0;
 }
 ```
+> 求联通块大小的题目若涉及到查询次数较多的题目，用并查集为更优选项。
 
 ##### DFS遍历图(树的重心)
-
 ```c++
 #include<bits/stdc++.h>
 using namespace std;
@@ -2119,7 +2120,6 @@ using namespace std;
 
 const int N=1e6+10;
 const int M=N*2;//无向图两条边
-
 
 int h[N],e[M],ne[M],idx;
 bool st[N];
@@ -2317,7 +2317,6 @@ struct node
     int x,y,z,s;//s存步数
 };
 
-
 void bfs(int z,int x,int y)
 {
     queue<node>q;
@@ -2372,7 +2371,6 @@ int main()
     return 0;
 }
 ```
-
 ##### BFS+路径保存
 
 ```c++
@@ -2564,7 +2562,7 @@ int main()
 }
 ```
 
-##### 拓扑序列（有向无环图AOV)
+##### 拓扑序列（有向无环图DAG)
 
 ```c++
 #include<bits/stdc++.h>
@@ -2573,7 +2571,6 @@ const int N=1e6+10;
 int n,m;
 int h[N],e[N],ne[N],idx;
 int q[N],d[N];//q队列存储层次遍历序列，d存储i号节点入度
-
 
 void add(int a,int b)
 {
@@ -2811,7 +2808,6 @@ int main()
 	cout<<res;
 }
 ```
-
 
 
 ##### bellman_ford()(处理边数限制)
@@ -3306,7 +3302,6 @@ int main()
 ```
 
 
-
 * * *
 ### 前缀和/差分
 
@@ -3477,21 +3472,18 @@ int main()
 
 #### 二维差分
 
-```c++
+```
 给以(x1, y1)为左上角，(x2, y2)为右下角的子矩阵中的所有元素加上c：
 S[x1, y1] += c, S[x2 + 1, y1] -= c, S[x1, y2 + 1] -= c, S[x2 + 1, y2 + 1] += c
 ```
 
-
-
+[例题]()
 ```c++
 #include<bits/stdc++.h>
 using namespace std;
 
-
 const int N=1e4+5;
 int a[N][N],b[N][N];
-
 
 inline int read()
 {
@@ -3500,7 +3492,6 @@ inline int read()
     while (c>='0'&&c<='9') x=x*10+c-'0',c=getchar();
     return x*y;//乘起来输出
 }
-
 
 int main()
 {
@@ -3549,12 +3540,10 @@ int main()
 #include<bits/stdc++.h>
 using namespace std;
 
-
 const int N=1e5+10,M=1e6+10;
 int n,m;
 char p[N],s[M];
 int ne[N];//最长公共前缀后缀
-
 
 int main()
 {
@@ -3625,9 +3614,7 @@ int main()
 #include<bits/stdc++.h>
 using namespace std;
 
-
 const int N=1e4+10;
-
 
 int n,m;
 int v[N],w[N];
@@ -3684,14 +3671,11 @@ int main()
 #include<bits/stdc++.h>
 using namespace std;
 
-
 const int N=1e4+10;
-
 
 int n,m;
 int v[N],w[N];
 int f[N][N];
-
 
 int main()
 {
@@ -3792,17 +3776,13 @@ int main()
 }
 ```
 
-
-
 ###### 二进制优化
 
 ```c++
 #include<bits/stdc++.h>
 using namespace std;
 
-
 const int N=25000,M=2010;//N要拆出来所以1000*log2000
-
 
 int n,m;
 int v[N],w[N];
@@ -3935,6 +3915,5 @@ int main()
 #### 区间DP
 
 #### 记忆化搜索
-
 
 
